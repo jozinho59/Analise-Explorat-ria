@@ -1,0 +1,53 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Carregar os dados do arquivo CSV
+data = pd.read_csv('trend_over_time.csv')
+
+# Converter a coluna de datas para o tipo datetime
+data['Week'] = pd.to_datetime(data['Week'])
+
+# Definir as linguagens de programação
+languages = ['Python', 'Java', 'C++']
+
+# Criar um gráfico de linha para cada linguagem de programação
+plt.figure(figsize=(12, 8))
+for lang in languages:
+    plt.plot(data['Week'], data[lang], label=lang)
+
+# Configurar o gráfico
+plt.title('Tendência de Popularidade das Linguagens de Programação ao Longo do Tempo')
+plt.xlabel('Data')
+plt.ylabel('Índice de Popularidade')
+plt.legend()
+plt.show()
+
+# Análise de sazonalidade (média móvel) para cada linguagem
+window_size = 12  # Tamanho da janela para média móvel (pode ser ajustado)
+for lang in languages:
+    data[f'{lang}_moving_avg'] = data[lang].rolling(window=window_size).mean()
+
+# Criar um gráfico para a média móvel de cada linguagem
+plt.figure(figsize=(12, 8))
+for lang in languages:
+    plt.plot(data['Week'], data[f'{lang}_moving_avg'], label=f'{lang} - Média Móvel')
+
+# Configurar o gráfico
+plt.title('Média Móvel das Linguagens de Programação ao Longo do Tempo')
+plt.xlabel('Data')
+plt.ylabel('Índice de Popularidade (Média Móvel)')
+plt.legend()
+plt.show()
+
+# Identificar a linguagem mais popular em diferentes períodos de tempo
+data['Mais_popular'] = data[languages].idxmax(axis=1)
+
+# Contar o número de vezes que cada linguagem foi a mais popular
+popular_counts = data['Mais_popular'].value_counts()
+
+print('Número de vezes que cada linguagem foi a mais popular:')
+print(popular_counts)
+
+# Conclusão da análise
+print("\nAnálise concluída.")
